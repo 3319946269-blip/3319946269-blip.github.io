@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匠芯 - 传统技艺创作辅助系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #c17a62;
+            --primary-dark: #8b5a4a;
+            --secondary: #6b8e6b;
+            --accent: #d4a574;
+            --light: #f8f4e9;
+            --dark: #2c2416;
+            --wood: #8b7355;
+            --paper: #f5f0e1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Serif SC', 'SimSun', serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f4e9 0%, #f0ebdd 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23c17a62' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 头部样式 */
+        .header {
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            border-bottom: 2px solid var(--wood);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            background: var(--light);
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 5px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--wood);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        
+        .subtagline {
+            font-size: 1rem;
+            color: var(--secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* 技艺展示区 */
+        .craft-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .craft-card {
+            background: var(--paper);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(193, 122, 98, 0.2);
+            cursor: pointer;
+        }
+        
+        .craft-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .craft-card.active {
+            border: 2px solid var(--primary);
+            box-shadow: 0 15px 30px rgba(193, 122, 98, 0.2);
+        }
+        
+        .craft-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .craft-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 36, 22, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .craft-card:hover .craft-overlay {
+            opacity: 1;
+        }
+        
+        .craft-overlay span {
+            color: white;
+            background: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .craft-info {
+            padding: 20px;
+        }
+        
+        .craft-name {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .craft-name i {
+            color: var(--accent);
+        }
+        
+        .craft-desc {
+            color: var(--dark);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .craft-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .craft-tag {
+            background: rgba(193, 122, 98, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(193, 122, 98, 0.3);
+        }
+        
+        /* 创作区 */
+        .creation-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .input-section, .output-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--paper);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(139, 117, 85, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--secondary);
+        }
+        
+        .craft-selector {
+            margin-bottom: 25px;
+        }
+        
+        .selector-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--wood);
+            font-weight: 600;
+        }
+        
+        .selector-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .selector-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid rgba(139, 117, 85, 0.3);
+            border-radius: 8px;
+            color: var(--wood);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .selector-btn:hover {
+            background: rgba(193, 122, 98, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .selector-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: white;
+            border: 1px solid rgba(139, 117, 85, 0.3);
+            border-radius: 10px;
+            color: var(--dark);
+            padding: 15px;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            font-family: 'Noto Serif SC', 'SimSun', serif;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(193, 122, 98, 0.2);
+        }
+        
+        .input-hint {
+            color: var(--secondary);
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary-dark);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 输出区 */
+        .output-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            min-height: 300px;
+            border: 1px solid rgba(139, 117, 85, 0.2);
+            position: relative;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        .craft-output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(139, 117, 85, 0.2);
+        }
+        
+        .output-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: var(--wood);
+            font-size: 1.1rem;
+        }
+        
+        /* 传统元素装饰 */
+        .traditional-border {
+            position: relative;
+            padding: 10px;
+        }
+        
+        .traditional-border::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            pointer-events: none;
+        }
+        
+        .seal {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+        
+        .seal-1 {
+            top: -20px;
+            right: -20px;
+        }
+        
+        .seal-2 {
+            bottom: -20px;
+            left: -20px;
+        }
+        
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--wood);
+            border-top: 1px solid rgba(139, 117, 85, 0.3);
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+            }
+            
+            .creation-area {
+                flex-direction: column;
+            }
+            
+            .craft-display {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hands"></i>
+                </div>
+                <div class="logo-text">匠芯</div>
+            </div>
+            <p class="tagline">以心传艺，以艺养心</p>
+            <p class="subtagline">辅助体验传统技艺的创作系统，通过智能辅助帮助您感受、理解和创作传统手工艺品，让千年技艺在数字时代焕发新生。</p>
+        </header>
+        
+        <!-- 技艺展示区 -->
+        <section class="craft-display" id="craftDisplay">
+            <!-- 技艺卡片将通过JS动态生成 -->
+        </section>
+        
+        <!-- 创作区 -->
+        <section class="creation-area">
+            <div class="input-section traditional-border">
+                <div class="seal seal-1">匠</div>
+                
+                <h2 class="section-title"><i class="fas fa-pen-nib"></i> 创作灵感</h2>
+                
+                <div class="craft-selector">
+                    <label class="selector-label">选择传统技艺：</label>
+                    <div class="selector-container" id="craftSelector">
+                        <!-- 选择按钮将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="input-hint">
+                    <i class="fas fa-lightbulb"></i> 请描述您的创作想法或想要了解的传统技艺细节
+                </div>
+                
+                <textarea id="inputText" placeholder="例如：我想创作一个带有传统云纹的陶瓷花瓶，瓶身要体现宋代瓷器的素雅之美..."></textarea>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="generateCraftIdea()">
+                        <i class="fas fa-seedling"></i> 生成创作方案
+                    </button>
+                    <button class="btn btn-secondary" onclick="learnCraftHistory()">
+                        <i class="fas fa-history"></i> 了解技艺历史
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearInput()">
+                        <i class="fas fa-eraser"></i> 清空输入
+                    </button>
+                </div>
+            </div>
+            
+            <div class="output-section traditional-border">
+                <div class="seal seal-2">芯</div>
+                
+                <div class="craft-output-header">
+                    <h2 class="section-title"><i class="fas fa-scroll"></i> 匠芯指引</h2>
+                    <button class="btn-secondary" style="padding: 8px 15px; font-size: 0.9rem;" onclick="copyOutput()">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                </div>
+                
+                <div class="loading" id="loadingIndicator">
+                    <div class="loading-icon">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <p class="loading-text">匠芯正在为您构思创作方案...</p>
+                </div>
+                
+                <div class="output-content" id="outputContent">
+                    <h3>欢迎使用匠芯创作系统</h3>
+                    <p>在这里，您可以：</p>
+                    <ul>
+                        <li>选择感兴趣的传统技艺</li>
+                        <li>获取个性化的创作方案</li>
+                        <li>了解传统技艺的历史与技艺要点</li>
+                        <li>获取现代与传统结合的创新灵感</li>
+                    </ul>
+                    <p>请从左侧选择一种传统技艺，并描述您的创作想法。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 底部 -->
+        <footer class="footer">
+            <div class="footer-logo">
+                <i class="fas fa-hands"></i> 匠芯
+            </div>
+            <p>传统技艺创作辅助系统 © 2023</p>
+            <p>传承非遗文化，创新传统技艺</p>
+        </footer>
+    </div>
+
+    <script>
+        // 传统技艺数据
+        const crafts = [
+            {
+                id: 1,
+                name: "陶瓷制作",
+                icon: "fas fa-vase",
+                tags: ["非遗", "手工艺", "烧制"],
+                color: "#c17a62",
+                desc: "陶瓷是中国传统工艺的瑰宝，从新石器时代的彩陶到唐宋的瓷器，传承千年。",
+                imageUrl: "ceramic.jpg",
+                details: {
+                    history: "中国陶瓷历史悠久，早在一万年前的新石器时代就开始制作陶器。宋代瓷器达到艺术顶峰，五大名窑闻名世界。",
+                    materials: ["陶土", "瓷土", "釉料", "彩料"],
+                    tools: ["拉坯机", "陶轮", "窑炉", "刻刀"],
+                    techniques: ["拉坯成型", "釉下彩", "釉上彩", "雕刻", "烧制"],
+                    modern: "现代陶瓷艺术结合了传统技艺与当代设计，可用于家居装饰、艺术装置等。"
+                }
+            },
+            {
+                id: 2,
+                name: "木雕工艺",
+                icon: "fas fa-tree",
+                tags: ["雕刻", "非遗", "手工艺"],
+                color: "#8b7355",
+                desc: "以刀为笔，以木为纸，木雕工艺展现了中国传统雕刻艺术的精髓。",
+                imageUrl: "woodcarving.jpg",
+                details: {
+                    history: "中国木雕艺术可追溯到新石器时代，明清时期达到高峰，广泛应用于建筑、家具和工艺品。",
+                    materials: ["黄花梨", "紫檀木", "楠木", "樟木"],
+                    tools: ["雕刻刀", "凿子", "锉刀", "砂纸"],
+                    techniques: ["浮雕", "透雕", "圆雕", "线刻"],
+                    modern: "现代木雕融入当代设计理念，创作出既有传统韵味又符合现代审美的作品。"
+                }
+            },
+            {
+                id: 3,
+                name: "刺绣艺术",
+                icon: "fas fa-threads",
+                tags: ["纺织", "非遗", "手工艺"],
+                color: "#d46a6a",
+                desc: "一针一线，绣出万千世界。中国刺绣以精细雅洁著称，是重要的非物质文化遗产。",
+                imageUrl: "embroidery.jpg",
+                details: {
+                    history: "中国刺绣至少有3000年历史，四大名绣（苏绣、湘绣、粤绣、蜀绣）各具特色。",
+                    materials: ["丝绸", "棉布", "绣线", "绣架"],
+                    tools: ["绣针", "绣绷", "剪刀", "描图纸"],
+                    techniques: ["平绣", "打籽绣", "盘金绣", "乱针绣"],
+                    modern: "现代刺绣与时尚设计结合，应用于高级定制服装、家居装饰和艺术创作。"
+                }
+            },
+            {
+                id: 4,
+                name: "书法艺术",
+                icon: "fas fa-brush",
+                tags: ["艺术", "文化", "书写"],
+                color: "#2c2416",
+                desc: "笔墨纸砚，书写中国千年文化。书法不仅是艺术，更是修身养性的方式。",
+                imageUrl: "calligraphy.jpg",
+                details: {
+                    history: "中国书法有3000多年历史，从甲骨文、金文到篆、隶、楷、行、草，形成了丰富的书体体系。",
+                    materials: ["宣纸", "墨锭", "毛笔", "砚台"],
+                    tools: ["笔架", "笔洗", "镇纸", "毛毡"],
+                    techniques: ["中锋用笔", "侧锋取妍", "提按转折", "墨分五色"],
+                    modern: "现代书法艺术在传统基础上不断创新，与平面设计、装置艺术等结合，拓展了表现空间。"
+                }
+            },
+            {
+                id: 5,
+                name: "剪纸艺术",
+                icon: "fas fa-cut",
+                tags: ["民间艺术", "非遗", "手工"],
+                color: "#d46a6a",
+                desc: "方寸之间，剪出万千世界。剪纸是中国最普及的民间传统装饰艺术之一。",
+                imageUrl: "papercut.jpg",
+                details: {
+                    history: "剪纸艺术起源于南北朝时期，至今已有1500多年历史，广泛用于节日装饰和生活礼仪。",
+                    materials: ["红纸", "彩纸", "金箔纸", "蜡盘"],
+                    tools: ["剪刀", "刻刀", "垫板", "图案"],
+                    techniques: ["对称剪", "折叠剪", "阴刻", "阳刻"],
+                    modern: "现代剪纸艺术融入当代设计元素，应用于平面设计、动画、建筑装饰等领域。"
+                }
+            },
+            {
+                id: 6,
+                name: "漆器工艺",
+                icon: "fas fa-paint-roller",
+                tags: ["非遗", "手工艺", "装饰"],
+                color: "#8b5a4a",
+                desc: "百里千刀一斤漆，漆器工艺展现了古代工匠的极致匠心。",
+                imageUrl: "lacquer.jpg",
+                details: {
+                    history: "中国漆器有7000多年历史，战国秦汉时期已达到很高水平，唐代漆器工艺进一步发展。",
+                    materials: ["生漆", "木胎", "金属胎", "颜料"],
+                    tools: ["漆刷", "刮刀", "雕刻刀", "打磨工具"],
+                    techniques: ["彩绘", "雕漆", "螺钿", "金漆"],
+                    modern: "现代漆器工艺与当代艺术结合，创作出既有传统韵味又具现代感的艺术品。"
+                }
+            }
+        ];
+        
+        // 当前选中的技艺
+        let selectedCraft = crafts[0];
+        
+        // 初始化技艺展示区
+        function initCraftDisplay() {
+            const craftDisplay = document.getElementById('craftDisplay');
+            const craftSelector = document.getElementById('craftSelector');
+            
+           craftDisplay.innerHTML = '';
+           craftSelector.innerHTML = '';
+           
+            crafts.forEach(craft => {
+                // 创建技艺卡片
+                const craftCard = document.createElement('div');
+                craftCard.className = 'craft-card';
+                craftCard.dataset.id = craft.id;
+                
+                // 随机生成背景颜色
+                const hue = Math.floor(Math.random() * 40) + 20; // 暖色调
+                const saturation = Math.floor(Math.random() * 30) + 40;
+                const lightness = Math.floor(Math.random() * 20) + 70;
+                const bgColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+                const imgPath=craft.imageUrl.trim();
+                
+
+craftCard.innerHTML = `
+    <div class="craft-image" style="background-color: ${bgColor};">
+        <!-- 核心修改：先尝试加载本地图片，失败则显示默认图标 -->
+        <img 
+            src="./jiangxin_images/${craft.imageUrl}" 
+            alt="${craft.name}"
+            onerror="this.src='https://picsum.photos/280/180?random=${craft.id}'; this.alt='${craft.name}（本地图片加载失败，显示示例图）'"
+            style="width:100%;height:100%;object-fit:cover;border-radius:10px;"
+        >
+        <div class="craft-overlay">
+            <span>点击选择</span>
+        </div>
+    </div>
+    <div class="craft-info">
+        <h3 class="craft-name">
+            <i class="${craft.icon}"></i> ${craft.name}
+        </h3>
+        <p class="craft-desc">${craft.desc}</p>
+        <div class="craft-tags">
+            ${craft.tags.map(tag => `<span class="craft-tag">${tag}</span>`).join('')}
+        </div>
+    </div>
+`;
+
+craftCard.addEventListener('click', () => selectCraft(craft.id));
+craftDisplay.appendChild(craftCard);
+
+                
+                craftCard.addEventListener('click', () => selectCraft(craft.id));
+                craftDisplay.appendChild(craftCard);
+                
+                // 创建选择按钮
+                const selectorBtn = document.createElement('button');
+                selectorBtn.className = 'selector-btn';
+                selectorBtn.textContent = craft.name;
+                selectorBtn.dataset.id = craft.id;
+                craftSelector.appendChild(selectorBtn);
+             });    
+
+             selectCraft(crafts[0].id);
+            }  
+                
+                
+        
+        // 选择技艺
+        function selectCraft(craftId) {
+            console.log("selectCraft 被调用,craftId=",craftId);
+            selectedCraft = crafts.find(craft => craft.id === craftId);
+    
+    // 先移除所有 active 样式
+    document.querySelectorAll('.craft-card').forEach(card => card.classList.remove('active'));
+    document.querySelectorAll('.selector-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // 给当前选中的卡片和按钮添加 active 样式
+    const targetCard = document.querySelector(`.craft-card[data-id="${craftId}"]`);
+    const targetBtn = document.querySelector(`.selector-btn[data-id="${craftId}"]`);
+    if (targetCard) targetCard.classList.add('active');
+    if (targetBtn) targetBtn.classList.add('active');
+     renderCraftDetails(selectedCraft);
+}
+
+// 新增：渲染技艺详情到右侧输出区
+function renderCraftDetails(craft) {
+    const outputContent = document.getElementById('outputContent');
+    outputContent.innerHTML = `
+        <div class="craft-output-header">
+            <h3 class="output-title">${craft.name} - 技艺详情</h3>
+        </div>
+        <div class="craft-content">
+            <h4>📜 历史渊源</h4>
+            <p>${craft.details.history}</p>
+            
+            <h4>📦 传统材料</h4>
+            <ul>
+                ${craft.details.materials.map(m => `<li>${m}</li>`).join('')}
+            </ul>
+            
+            <h4>🔧 主要工具</h4>
+            <ul>
+                ${craft.details.tools.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+            
+            <h4>✂️ 核心技法</h4>
+            <ul>
+                ${craft.details.techniques.map(tech => `<li>${tech}</li>`).join('')}
+            </ul>
+            
+            <h4>🌟 现代发展</h4>
+            <p>${craft.details.modern}</p>
+        </div>
+    `;
+}
+    // 更新输入框提示
+    const inputText = document.getElementById('inputText');
+    inputText.placeholder = `例如：我想创作一个${selectedCraft.name}作品，需要体现...`;
+
+    
+        
+        // 显示加载指示器
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('outputContent').style.display = 'none';
+        }
+        
+        // 隐藏加载指示器
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('outputContent').style.display = 'block';
+        }
+        
+        // 生成创作方案
+        function generateCraftIdea() {
+            const inputText = document.getElementById('inputText').value;
+            
+            if (!inputText.trim() && inputText.length < 5) {
+                alert('请描述您的创作想法，至少5个字以上');
+                return;
+            }
+            
+            showLoading();
+            
+            // 模拟AI处理延迟
+            setTimeout(() => {
+                const idea = generateIdea(selectedCraft, inputText);
+                displayOutput(idea, "创作方案");
+                hideLoading();
+            }, 1800);
+        }
+        
+        // 了解技艺历史
+        function learnCraftHistory() {
+            showLoading();
+            
+            // 模拟AI处理延迟
+            setTimeout(() => {
+                const history = generateHistory(selectedCraft);
+                displayOutput(history, "技艺传承");
+                hideLoading();
+            }, 1500);
+        }
+        
+        // 生成创作想法
+        function generateIdea(craft, userInput) {
+            const techniques = craft.details.techniques;
+            const materials = craft.details.materials;
+            
+            // 随机选择技术和材料
+            const randomTechnique = techniques[Math.floor(Math.random() * techniques.length)];
+            const randomMaterial = materials[Math.floor(Math.random() * materials.length)];
+            
+            return `## ${craft.name}创作方案
+
+### 您的创作想法：
+"${userInput}"
+
+### 匠芯建议：
+1. **主题构思**：建议以"传统与现代的对话"为主题，将${craft.name}的传统技艺与现代设计理念结合。
+
+2. **技法推荐**：重点使用${randomTechnique}技法，这是${craft.name}的核心技艺之一，能充分展现工艺之美。
+
+3. **材料选择**：推荐使用${randomMaterial}作为主要材料，这种材料在历史上常用于制作精品，能体现传统韵味。
+
+4. **创作步骤**：
+   - 第一步：设计草图，融合传统纹样与现代构图
+   - 第二步：准备材料，精选优质${randomMaterial}
+   - 第三步：运用${randomTechnique}技法进行创作
+   - 第四步：精细加工与修饰
+   - 第五步：完成作品并进行展示设计
+
+5. **现代创新点**：
+   - 结合数字技术进行前期设计
+   - 尝试与传统材料不同的配色方案
+   - 考虑作品与当代生活空间的融合方式
+
+6. **文化内涵**：作品可以体现"天人合一"的传统哲学思想，通过${craft.name}表达对自然与文化的尊重。
+
+### 温馨提示：
+创作过程中，不妨放慢节奏，感受每一道工序带来的愉悦。传统技艺的精髓不仅在于结果，更在于制作过程中的专注与投入。`;
+        }
+        
+        // 生成技艺历史
+        function generateHistory(craft) {
+            return `## ${craft.name}技艺传承
+
+### 历史渊源：
+${craft.details.history}
+
+### 传统材料：
+${craft.details.materials.map(material => `- ${material}`).join('\n')}
+
+### 主要工具：
+${craft.details.tools.map(tool => `- ${tool}`).join('\n')}
+
+### 核心技法：
+${craft.details.techniques.map(technique => `- ${technique}`).join('\n')}
+
+### 现代发展：
+${craft.details.modern}
+
+### 文化价值：
+${craft.name}不仅是一种手工艺，更是中华文化的重要载体。它体现了：
+1. **匠心精神**：对工艺极致的追求
+2. **自然观**：尊重材料本性，追求天人合一
+3. **审美传统**：含蓄内敛、和谐统一的审美取向
+4. **生活智慧**：将实用性与艺术性完美结合
+
+### 传承建议：
+1. **系统学习**：从基础技法开始，循序渐进
+2. **师承传统**：如有条件，可寻找传统匠人指导
+3. **创新实践**：在掌握传统基础上大胆创新
+4. **文化研究**：了解相关历史背景与文化内涵
+
+### 匠芯寄语：
+"每一件传统手工艺品都凝聚着匠人的时间与心血，是物质与精神的完美结合。在快节奏的现代生活中，传统技艺提醒我们慢下来，专注于当下，感受手作带来的宁静与满足。"`;
+        }
+        
+        // 显示输出内容
+        function displayOutput(content, title) {
+            const outputContent = document.getElementById('outputContent');
+            outputContent.innerHTML = `
+                <div class="craft-output-header">
+                    <h3 class="output-title">${title} - ${selectedCraft.name}</h3>
+                </div>
+                <div class="craft-content">
+                    ${content.replace(/\n/g, '<br>')}
+                </div>
+            `;
+        }
+        
+        // 复制输出内容
+        function copyOutput() {
+            const outputContent = document.getElementById('outputContent');
+            const textToCopy = outputContent.innerText;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('内容已复制到剪贴板！');
+            });
+        }
+        
+        // 清空输入
+        function clearInput() {
+            if (confirm('确定要清空输入内容吗？')) {
+                document.getElementById('inputText').value = '';
+            }
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initCraftDisplay();
+           // 初始化时默认显示第一个技艺的详情
+renderCraftDetails(crafts[0]); 
+            // 全局监听卡片点击
+document.getElementById('craftDisplay').addEventListener('click', (e) => {
+    console.log("卡片区域被点击了!", e.target);
+    // 找到被点击的卡片（不管点在遮罩/图片/文字上）
+    const craftCard = e.target.closest('.craft-card');
+    if (craftCard) {
+        const craftId = parseInt(craftCard.dataset.id);
+        selectCraft(craftId);
+    }
+});
+
+// 全局监听选择器按钮点击
+document.getElementById('craftSelector').addEventListener('click', (e) => {
+    const selectorBtn = e.target.closest('.selector-btn');
+    if (selectorBtn) {
+        const craftId = parseInt(selectorBtn.dataset.id);
+        selectCraft(craftId);
+    }
+});
+            
+            // 为输入框添加示例文本
+            document.getElementById('inputText').addEventListener('focus', function() {
+                if (this.value === '') {
+                    this.value = `我想创作一个${selectedCraft.name}作品，需要体现传统与现代的结合...`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
